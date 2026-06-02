@@ -117,7 +117,7 @@
     <li><b>Интернет при первой установке</b> — Python, библиотеки и модель качаются из сети. После установки программа работает офлайн.</li>
     <li><b>GPU NVIDIA — необязательно.</b> Без видеокарты всё работает на процессоре (медленнее).</li>
   </ul>
-  <div class="note">Адрес репозитория ниже обозначен как <code>https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git</code>. Замените <code>&lt;ВАШ_АККАУНТ&gt;</code> на реальный адрес, который вам дали (или см. раздел 8, если вы публикуете проект сами).</div>
+  <div class="note">Проект опубликован здесь: <code>https://github.com/serenkiy-commits/voicekey</code>. Команды <code>git clone</code> ниже используют этот адрес. Разворачиваете свою копию: см. раздел 8.</div>
 
   <h2 id="s1">1. Windows — быстрый путь (рекомендуется)</h2>
 
@@ -141,7 +141,7 @@
   <h3>1.3 Скачать проект</h3>
   <p>В PowerShell перейдите в папку (например, рабочий стол) и клонируйте репозиторий:</p>
   <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>cd $env:USERPROFILE\Desktop
-git clone https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git
+git clone https://github.com/serenkiy-commits/voicekey.git
 cd voicekey</code></pre></div>
   <p>Появится папка <code>voicekey</code>. Дальше все команды — <b>внутри неё</b>.</p>
 
@@ -200,7 +200,7 @@ python3 -m tkinter      # должно открыться маленькое т�
 
   <h3>3.3 Скачать проект</h3>
   <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>cd ~/Desktop
-git clone https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git
+git clone https://github.com/serenkiy-commits/voicekey.git
 cd voicekey</code></pre></div>
 
   <h3>3.4 Установить</h3>
@@ -246,7 +246,7 @@ launchctl load ~/Library/LaunchAgents/com.voicekey.agent.plist   # активи�
       <tr><td>Python (macOS)</td><td><a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener">python.org/downloads/macos</a></td></tr>
       <tr><td>Git (Windows)</td><td><a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a></td></tr>
       <tr><td>Git (macOS)</td><td><code>xcode-select --install</code> или <a href="https://git-scm.com/download/mac" target="_blank" rel="noopener">git-scm.com/download/mac</a></td></tr>
-      <tr><td>Сам проект</td><td><code>git clone https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git</code></td></tr>
+      <tr><td>Сам проект</td><td><code>git clone https://github.com/serenkiy-commits/voicekey.git</code></td></tr>
       <tr><td>Модель large-v3-turbo</td><td><a href="https://huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo" target="_blank" rel="noopener">huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo</a></td></tr>
       <tr><td>GPU-библиотеки (Windows)</td><td><code>pip install nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*</code></td></tr>
     </tbody>

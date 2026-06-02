@@ -20,9 +20,8 @@
   После установки программа работает офлайн.
 - **GPU NVIDIA — необязательно.** Без видеокарты всё работает на процессоре (медленнее).
 
-> Адрес репозитория ниже обозначен как `https://github.com/<ВАШ_АККАУНТ>/voicekey.git`.
-> Замените `<ВАШ_АККАУНТ>` на реальный адрес, который вам дали (или см. раздел 8, если
-> вы публикуете проект сами).
+> Проект опубликован здесь: `https://github.com/serenkiy-commits/voicekey`. Команды
+> `git clone` ниже используют этот адрес. (Разворачиваете свою копию: см. раздел 8.)
 
 ---
 
@@ -60,7 +59,7 @@
 
 ```powershell
 cd $env:USERPROFILE\Desktop
-git clone https://github.com/<ВАШ_АККАУНТ>/voicekey.git
+git clone https://github.com/serenkiy-commits/voicekey.git
 cd voicekey
 ```
 
@@ -198,7 +197,7 @@ xcode-select --install
 
 ```bash
 cd ~/Desktop
-git clone https://github.com/<ВАШ_АККАУНТ>/voicekey.git
+git clone https://github.com/serenkiy-commits/voicekey.git
 cd voicekey
 ```
 
@@ -277,7 +276,7 @@ launchctl load ~/Library/LaunchAgents/com.voicekey.agent.plist   # активи�
 | Python (macOS) | <https://www.python.org/downloads/macos/> |
 | Git (Windows) | <https://git-scm.com/download/win> |
 | Git (macOS) | `xcode-select --install` или <https://git-scm.com/download/mac> |
-| Сам проект | `git clone https://github.com/<ВАШ_АККАУНТ>/voicekey.git` |
+| Сам проект | `git clone https://github.com/serenkiy-commits/voicekey.git` |
 | Модель large-v3-turbo | <https://huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo> |
 | GPU-библиотеки (Windows) | `pip install nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*` |
 
