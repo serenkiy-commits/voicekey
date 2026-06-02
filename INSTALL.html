@@ -92,9 +92,21 @@
 
   <p>Иконка в трее, история (SQLite), настройки, словарь автозамен. Эта инструкция написана так, чтобы человек <b>с чистой системы</b> смог развернуть программу: каждая команда и ссылка прописаны явно.</p>
 
+  <h2 id="quick">Установка одной командой (быстро)</h2>
+  <p>Не хотите делать шаги вручную — одна строка в терминале.</p>
+  <p><b>Windows</b> (PowerShell):</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>irm https://raw.githubusercontent.com/serenkiy-commits/voicekey/main/bootstrap.ps1 | iex</code></pre></div>
+  <p><b>macOS</b> (Terminal):</p>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>curl -fsSL https://raw.githubusercontent.com/serenkiy-commits/voicekey/main/bootstrap.sh | bash</code></pre></div>
+  <p>Скрипт сам поставит Python (если нужно), скачает проект, зависимости и модель, подготовит запуск (на Windows создаст ярлык на рабочем столе).</p>
+  <p><b>Если Python уже установлен</b> — можно как пакет (аналог npx):</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>pipx install git+https://github.com/serenkiy-commits/voicekey.git
+voicekey</code></pre></div>
+
   <nav class="toc">
     <h2>Содержание</h2>
     <ol>
+      <li><a href="#quick">Установка одной командой</a></li>
       <li><a href="#s0">Что понадобится</a></li>
       <li><a href="#s1">Windows — быстрый путь</a></li>
       <li><a href="#s2">Windows — ручной путь</a></li>

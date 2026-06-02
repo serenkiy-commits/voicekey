@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voicekey"
+version = "0.1.0"
+description = "Локальный голосовой ввод (push-to-talk на CapsLock) на базе faster-whisper"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "faster-whisper",
+    "sounddevice",
+    "numpy",
+    "pystray",
+    "Pillow",
+    "customtkinter",
+    "pyperclip",
+    "pyautogui",
+    "keyboard; sys_platform == 'win32'",
+    "pynput; sys_platform != 'win32'",
+]
+
+[project.gui-scripts]
+voicekey = "voicekey.main:main"
+
+[tool.setuptools]
+packages = ["voicekey", "voicekey.ui"]
+
+[tool.setuptools.package-dir]
+voicekey = "."
+
+[tool.setuptools.package-data]
+voicekey = ["config.json", "dictionary.json"]

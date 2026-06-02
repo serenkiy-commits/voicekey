@@ -10,6 +10,36 @@
 
 ---
 
+## Установка одной командой (быстро)
+
+Не хотите делать шаги вручную — одна строка в терминале.
+
+**Windows** (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/serenkiy-commits/voicekey/main/bootstrap.ps1 | iex
+```
+
+**macOS** (Terminal):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/serenkiy-commits/voicekey/main/bootstrap.sh | bash
+```
+
+Скрипт сам поставит Python (если нужно), скачает проект, зависимости и модель, подготовит
+запуск (на Windows создаст ярлык на рабочем столе).
+
+**Если Python уже установлен** — можно как пакет (аналог npx):
+
+```powershell
+pipx install git+https://github.com/serenkiy-commits/voicekey.git
+voicekey
+```
+
+Ниже — подробная ручная установка по шагам.
+
+---
+
 ## 0. Что понадобится (одинаково для Windows и macOS)
 
 - **Python 3.10–3.12** — на 3.13+ часть пакетов может ещё не собираться. Ссылки ниже.
