@@ -31,10 +31,12 @@ class Transcriber:
                 device=self.device,
                 compute_type=self.compute_type,
             )
+            if self.device != "cpu":
+                self._warmup()  # прогрев: ошибки cublas/cudnn вылезут тут, а не при первой диктовке
         except Exception as e:
             if self.device == "cpu":
                 raise
-            print(f"[Transcriber] {self.device} недоступен ({e}). Переключаюсь на CPU.")
+            print(f"[Transcriber] {self.device} недоступен ({e}). Переключаюсь на CPU/int8.")
             self.device = "cpu"
             self.compute_type = "int8"
             self.model = WhisperModel(
@@ -43,6 +45,15 @@ class Transcriber:
                 compute_type=self.compute_type,
             )
         print(f"[Transcriber] Model loaded on {self.device}.")
+
+    def _warmup(self):
+        """Крошечный инференс, чтобы GPU-библиотеки (cublas/cudnn) реально
+        загрузились и их отсутствие поймалось здесь, а не при первой диктовке."""
+        import numpy as np
+        dummy = (np.random.randn(16000).astype("float32") * 0.01)
+        segments, _ = self.model.transcribe(dummy, language="ru", beam_size=1, vad_filter=False)
+        for _ in segments:
+            pass
 
     def transcribe(self, audio_np, sample_rate=16000):
         with self._lock:

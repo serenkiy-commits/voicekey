@@ -4,10 +4,10 @@ import pyperclip
 
 
 if sys.platform == "win32":
-    import keyboard
+    import pyautogui
 
     def _paste():
-        keyboard.send("ctrl+v")
+        pyautogui.hotkey("ctrl", "v")
 
 else:
     from pynput.keyboard import Controller, Key

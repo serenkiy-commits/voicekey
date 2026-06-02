@@ -65,6 +65,36 @@ def get_active_window_title():
         return ""
 
 
+def get_foreground_hwnd():
+    if sys.platform != "win32":
+        return None
+    try:
+        return ctypes.windll.user32.GetForegroundWindow()
+    except Exception:
+        return None
+
+
+def get_window_title(hwnd):
+    if sys.platform != "win32" or not hwnd:
+        return ""
+    try:
+        length = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
+        buf = ctypes.create_unicode_buffer(length + 1)
+        ctypes.windll.user32.GetWindowTextW(hwnd, buf, length + 1)
+        return buf.value
+    except Exception:
+        return ""
+
+
+def set_foreground(hwnd):
+    if sys.platform != "win32" or not hwnd:
+        return
+    try:
+        ctypes.windll.user32.SetForegroundWindow(hwnd)
+    except Exception:
+        pass
+
+
 class VoiceKey:
     def __init__(self):
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
@@ -81,6 +111,8 @@ class VoiceKey:
         self.dictionary = load_dictionary()
         self.recording = False
         self._record_start_time = 0
+        self._target_hwnd = None
+        self._target_title = ""
 
         self.history_window = HistoryWindow()
         self.settings_window = SettingsWindow(on_config_changed=self._on_config_changed)
@@ -136,6 +168,9 @@ class VoiceKey:
             self._stop_recording()
 
     def _start_recording(self):
+        # Запомнить окно, куда потом вставлять текст (до показа overlay)
+        self._target_hwnd = get_foreground_hwnd()
+        self._target_title = get_window_title(self._target_hwnd)
         self.recording = True
         self._record_start_time = time.time()
         self.tray.set_recording()
@@ -186,8 +221,8 @@ class VoiceKey:
             rms = -1.0
         log(f"[VoiceKey] Аудио: {len(audio)} сэмплов, rms={rms:.5f}")
 
-        # Transcribe
-        app_name = get_active_window_title()
+        # Transcribe (окно вставки запомнили при старте записи)
+        app_name = self._target_title
         try:
             raw_text = self.transcriber.transcribe(audio)
             text = postprocess(raw_text, self.dictionary)
@@ -198,13 +233,15 @@ class VoiceKey:
             self.tray.set_idle()
             return
 
-        # Hide overlay immediately before inserting text
+        # Скрыть overlay и вернуть фокус целевому окну перед вставкой
         if self.overlay:
             self.overlay.hide_immediate()
-        time.sleep(0.2)
+        set_foreground(self._target_hwnd)
+        time.sleep(0.35)
 
         if text:
-            log(f"[VoiceKey] Результат: {text!r}")
+            cur_title = get_window_title(get_foreground_hwnd())
+            log(f"[VoiceKey] Результат: {text!r} -> окно вставки: {cur_title!r} (цель: {self._target_title!r})")
             try:
                 insert_text(text)
             except Exception:
