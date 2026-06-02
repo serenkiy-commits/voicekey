@@ -3,6 +3,7 @@ import os
 import sys
 import threading
 import time
+import traceback
 import ctypes
 
 import customtkinter as ctk
@@ -19,6 +20,18 @@ from voicekey.ui.settings import SettingsWindow
 from voicekey.ui.overlay import RecordingOverlay
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
+LOG_PATH = os.path.join(os.path.dirname(__file__), "voicekey.log")
+
+
+def log(msg):
+    """Печать в консоль + дозапись в voicekey.log (нужно для диагностики под pythonw)."""
+    line = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}"
+    print(line)
+    try:
+        with open(LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass
 
 
 def beep(freq, duration_ms):
@@ -87,9 +100,9 @@ class VoiceKey:
         self.overlay = None
 
     def run(self):
-        print("[VoiceKey] Loading model...")
+        log("[VoiceKey] Loading model...")
         self.transcriber.load_model()
-        print("[VoiceKey] Model ready. CapsLock = toggle recording.")
+        log(f"[VoiceKey] Model ready on device={self.transcriber.device}. CapsLock = toggle recording.")
 
         # Start hotkey listener
         self.hook.start()
@@ -132,7 +145,7 @@ class VoiceKey:
         # Beep: start
         beep(600, 100)
         self.recorder.start()
-        print("[VoiceKey] Recording started.")
+        log("[VoiceKey] Recording started.")
 
     def _stop_recording(self):
         self.recording = False
@@ -140,7 +153,7 @@ class VoiceKey:
         # Beep: stop (double)
         beep(800, 80)
         beep(1000, 80)
-        print("[VoiceKey] Recording stopped. Transcribing...")
+        log("[VoiceKey] Recording stopped. Transcribing...")
 
         self.tray.set_processing()
         # Switch overlay to processing animation
@@ -149,16 +162,30 @@ class VoiceKey:
         audio = self.recorder.stop()
 
         if audio is None or len(audio) < 1600:  # <0.1s
-            print("[VoiceKey] Audio too short, skipping.")
+            log("[VoiceKey] Аудио пустое/слишком короткое — пропуск. Проверьте микрофон.")
             if self._ctk_root and self.overlay:
                 self._ctk_root.after(0, self.overlay.hide)
             self.tray.set_idle()
             return
 
+        try:
+            import numpy as np
+            rms = float(np.sqrt(np.mean(audio.astype("float64") ** 2)))
+        except Exception:
+            rms = -1.0
+        log(f"[VoiceKey] Аудио: {len(audio)} сэмплов, rms={rms:.5f}")
+
         # Transcribe
         app_name = get_active_window_title()
-        raw_text = self.transcriber.transcribe(audio)
-        text = postprocess(raw_text, self.dictionary)
+        try:
+            raw_text = self.transcriber.transcribe(audio)
+            text = postprocess(raw_text, self.dictionary)
+        except Exception:
+            log("[VoiceKey] Ошибка распознавания:\n" + traceback.format_exc())
+            if self.overlay:
+                self.overlay.hide_immediate()
+            self.tray.set_idle()
+            return
 
         # Hide overlay immediately before inserting text
         if self.overlay:
@@ -166,11 +193,14 @@ class VoiceKey:
         time.sleep(0.2)
 
         if text:
-            print(f"[VoiceKey] Result: {text}")
-            insert_text(text)
+            log(f"[VoiceKey] Результат: {text!r}")
+            try:
+                insert_text(text)
+            except Exception:
+                log("[VoiceKey] Ошибка вставки (буфер/клавиши):\n" + traceback.format_exc())
             save_transcription(text, duration_sec=duration, app_name=app_name)
         else:
-            print("[VoiceKey] Empty transcription.")
+            log(f"[VoiceKey] Пустое распознавание (raw={raw_text!r}). Вероятно тишина в записи — проверьте микрофон/громкость/язык.")
 
         self.tray.set_idle()
 

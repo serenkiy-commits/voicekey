@@ -20,6 +20,7 @@ models-*/
 
 # Данные пользователя
 history.db
+voicekey.log
 
 # Системное
 .DS_Store
