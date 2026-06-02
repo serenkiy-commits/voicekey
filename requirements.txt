@@ -1,0 +1,10 @@
+faster-whisper
+sounddevice
+numpy
+pystray
+Pillow
+customtkinter
+pyperclip
+pyautogui
+keyboard; sys_platform == "win32"
+pynput; sys_platform != "win32"

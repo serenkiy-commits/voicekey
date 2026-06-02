@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoiceKey — установка с нуля</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#171a23; --ink:#e7e9ee; --muted:#9aa3b2;
+    --line:#262b38; --accent:#6c8cff; --accent2:#9b6cff;
+    --code-bg:#0b0d13; --ok:#3ecf8e; --warn:#f5b942;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:0 20px 80px}
+  header.hero{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff; padding:48px 20px 40px; margin-bottom:8px;
+  }
+  header.hero .inner{max-width:880px; margin:0 auto}
+  header.hero h1{margin:0 0 8px; font-size:38px; letter-spacing:-.5px}
+  header.hero p{margin:0; font-size:18px; opacity:.95; max-width:680px}
+  .badges{margin-top:18px; display:flex; gap:8px; flex-wrap:wrap}
+  .badge{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.25);
+    padding:5px 12px; border-radius:999px; font-size:13px; font-weight:600}
+  h2{margin:42px 0 14px; font-size:25px; padding-bottom:8px; border-bottom:1px solid var(--line)}
+  h3{margin:26px 0 10px; font-size:19px; color:#cdd4e4}
+  p{margin:12px 0}
+  a{color:var(--accent); text-decoration:none}
+  a:hover{text-decoration:underline}
+  ul,ol{margin:12px 0; padding-left:24px}
+  li{margin:6px 0}
+  code{background:var(--code-bg); border:1px solid var(--line); border-radius:5px;
+    padding:1px 6px; font-family:"SF Mono",Consolas,Menlo,monospace; font-size:14px; color:#e3e7f0}
+  .code{position:relative; margin:14px 0}
+  .code pre{background:var(--code-bg); border:1px solid var(--line); border-radius:10px;
+    padding:16px 16px; overflow-x:auto; margin:0}
+  .code pre code{background:none; border:none; padding:0; font-size:13.5px; line-height:1.6; color:#dfe4f1}
+  .code .lang{position:absolute; top:0; left:14px; transform:translateY(-50%);
+    background:var(--card); border:1px solid var(--line); color:var(--muted);
+    font-size:11px; padding:2px 8px; border-radius:6px; letter-spacing:.4px; text-transform:uppercase}
+  .copy{position:absolute; top:8px; right:8px; background:var(--card); color:var(--muted);
+    border:1px solid var(--line); border-radius:7px; padding:5px 11px; font-size:12px;
+    cursor:pointer; transition:.15s}
+  .copy:hover{color:#fff; border-color:var(--accent)}
+  .toc{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 22px; margin:22px 0}
+  .toc h2{margin:0 0 10px; font-size:16px; border:none; padding:0; color:var(--muted); text-transform:uppercase; letter-spacing:.6px}
+  .toc ol{columns:2; column-gap:30px; margin:0; padding-left:20px}
+  .toc a{color:#cdd4e4}
+  .note{border-left:4px solid var(--accent); background:rgba(108,140,255,.08);
+    padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#cfd6e6}
+  .note.warn{border-left-color:var(--warn); background:rgba(245,185,66,.09)}
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:14.5px}
+  th,td{border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top}
+  th{background:var(--card); color:#cdd4e4}
+  td code{font-size:13px}
+  hr{border:none; border-top:1px solid var(--line); margin:34px 0}
+  footer{color:var(--muted); font-size:13px; text-align:center; margin-top:40px}
+  @media (max-width:640px){
+    header.hero h1{font-size:30px}
+    .toc ol{columns:1}
+  }
+  @media print{
+    body{background:#fff; color:#000}
+    header.hero{background:#444; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+    .copy{display:none}
+    .code pre,code{background:#f3f3f3; color:#000; border-color:#ccc}
+    a{color:#000}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="inner">
+    <h1>VoiceKey</h1>
+    <p>Локальный голосовой ввод. Нажал <b>CapsLock</b> → говоришь → ещё раз CapsLock → текст распознаётся офлайн (Whisper) и вставляется в активное окно.</p>
+    <div class="badges">
+      <span class="badge">Windows</span>
+      <span class="badge">macOS</span>
+      <span class="badge">Офлайн · Whisper</span>
+      <span class="badge">Установка с нуля</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <p>Иконка в трее, история (SQLite), настройки, словарь автозамен. Эта инструкция написана так, чтобы человек <b>с чистой системы</b> смог развернуть программу: каждая команда и ссылка прописаны явно.</p>
+
+  <nav class="toc">
+    <h2>Содержание</h2>
+    <ol>
+      <li><a href="#s0">Что понадобится</a></li>
+      <li><a href="#s1">Windows — быстрый путь</a></li>
+      <li><a href="#s2">Windows — ручной путь</a></li>
+      <li><a href="#s3">macOS</a></li>
+      <li><a href="#s4">Ссылки одним списком</a></li>
+      <li><a href="#s5">Модель распознавания</a></li>
+      <li><a href="#s6">Как пользоваться</a></li>
+      <li><a href="#s7">Если что-то не работает</a></li>
+      <li><a href="#s8">Публикация проекта</a></li>
+      <li><a href="#s9">Удаление</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="s0">0. Что понадобится (одинаково для Windows и macOS)</h2>
+  <ul>
+    <li><b>Python 3.10–3.12</b> — на 3.13+ часть пакетов может ещё не собираться. Ссылки ниже.</li>
+    <li><b>Git</b> — чтобы скачать проект командой <code>git clone</code>. Ссылки ниже.</li>
+    <li><b>Микрофон.</b></li>
+    <li><b>~2–3 ГБ свободного места</b> под модель распознавания.</li>
+    <li><b>Интернет при первой установке</b> — Python, библиотеки и модель качаются из сети. После установки программа работает офлайн.</li>
+    <li><b>GPU NVIDIA — необязательно.</b> Без видеокарты всё работает на процессоре (медленнее).</li>
+  </ul>
+  <div class="note">Адрес репозитория ниже обозначен как <code>https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git</code>. Замените <code>&lt;ВАШ_АККАУНТ&gt;</code> на реальный адрес, который вам дали (или см. раздел 8, если вы публикуете проект сами).</div>
+
+  <h2 id="s1">1. Windows — быстрый путь (рекомендуется)</h2>
+
+  <h3>1.1 Установить Python</h3>
+  <ol>
+    <li>Откройте <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> и скачайте <b>Python 3.12</b>.</li>
+    <li>Запустите установщик. <b>ОБЯЗАТЕЛЬНО</b> поставьте галочку <b>«Add python.exe to PATH»</b> внизу первого окна, затем «Install Now».</li>
+    <li>Откройте <b>PowerShell</b> (Win → наберите <code>powershell</code> → Enter) и проверьте:</li>
+  </ol>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python --version</code></pre></div>
+  <p>Должно вывести <code>Python 3.12.x</code>. Если команда не найдена — переустановите Python с галочкой PATH.</p>
+
+  <h3>1.2 Установить Git</h3>
+  <ol>
+    <li>Скачайте установщик: <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a>.</li>
+    <li>Установите со всеми настройками по умолчанию (жмите «Next»).</li>
+    <li>Проверка:</li>
+  </ol>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>git --version</code></pre></div>
+
+  <h3>1.3 Скачать проект</h3>
+  <p>В PowerShell перейдите в папку (например, рабочий стол) и клонируйте репозиторий:</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>cd $env:USERPROFILE\Desktop
+git clone https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git
+cd voicekey</code></pre></div>
+  <p>Появится папка <code>voicekey</code>. Дальше все команды — <b>внутри неё</b>.</p>
+
+  <h3>1.4 Установить (один двойной клик)</h3>
+  <p>В Проводнике откройте папку <code>voicekey</code> и <b>дважды кликните <code>install.bat</code></b>. Скрипт сам:</p>
+  <ol>
+    <li>проверит Python,</li>
+    <li>создаст изолированное окружение <code>.venv</code>,</li>
+    <li>поставит все библиотеки,</li>
+    <li>скачает модель <b>large-v3-turbo</b> (~1.5 ГБ, разово).</li>
+  </ol>
+  <p>Дождитесь строки <code>Готово</code> и нажмите любую клавишу.</p>
+
+  <h3>1.5 Запуск</h3>
+  <p>Дважды кликните <b><code>start.bat</code></b>. Прозвучит короткий сигнал, в трее появится зелёный кружок — готово. Нажмите <b>CapsLock</b>, говорите, ещё раз CapsLock — текст вставится в активное поле.</p>
+
+  <h2 id="s2">2. Windows — ручной путь (без скриптов)</h2>
+  <p>Если хотите выполнить всё руками или <code>install.bat</code> не сработал. PowerShell в папке <code>voicekey</code>:</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r requirements.txt</code></pre></div>
+  <div class="note warn">Если PowerShell ругается «выполнение скриптов отключено», один раз выполните <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, подтвердите <code>Y</code>, затем снова активируйте окружение.</div>
+  <p>Скачать модель заранее (иначе скачается при первом запуске):</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python -c "from faster_whisper import WhisperModel; WhisperModel('large-v3-turbo', device='cpu', compute_type='int8')"</code></pre></div>
+  <p>Запуск из активированного окружения:</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>cd ..
+python -m voicekey.main</code></pre></div>
+  <div class="note">Запускать <code>python -m voicekey.main</code> нужно из <b>родительской</b> папки (на уровень выше <code>voicekey</code>). <code>start.bat</code> делает этот переход сам.</div>
+
+  <h3>2.1 Видеокарта NVIDIA (ускорение, необязательно)</h3>
+  <p>По умолчанию в <code>config.json</code> стоит <code>"device": "cuda"</code>. Если рабочих библиотек CUDA нет, программа <b>сама переключится на процессор</b> — ничего не сломается, просто будет медленнее.</p>
+  <p>Чтобы реально задействовать GPU, нужны свежий драйвер NVIDIA и runtime CUDA 12 + cuDNN 9. Проще всего поставить их прямо в окружение (PowerShell в папке <code>voicekey</code>, окружение активировано):</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>pip install nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*</code></pre></div>
+  <p>В <code>config.json</code> оставьте <code>"device": "cuda"</code>, <code>"compute_type": "float16"</code>. Для принудительного CPU поставьте <code>"device": "cpu"</code>, <code>"compute_type": "int8"</code>.</p>
+
+  <h3>2.2 Автозапуск при входе (необязательно)</h3>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python -m voicekey.autostart          # включить
+python -m voicekey.autostart remove   # выключить</code></pre></div>
+
+  <h2 id="s3">3. macOS</h2>
+  <div class="note warn"><b>Честно:</b> проект разрабатывался и тестировался на Windows. macOS-ветки кода написаны по документации (pynput, launchd, sounddevice), но на «живом» Mac не прогонялись. Базовый сценарий должен работать; возможна доводка трея/оверлея — см. раздел 7.</div>
+
+  <h3>3.1 Установить Python с поддержкой Tk</h3>
+  <ol>
+    <li>Скачайте <b>Python 3.12</b> (.pkg) с <a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener">python.org/downloads/macos</a>, установите. Tk уже внутри.</li>
+    <li>Проверка в Terminal:</li>
+  </ol>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python3 --version
+python3 -m tkinter      # должно открыться маленькое тестовое окно</code></pre></div>
+  <p>Альтернатива через Homebrew: <code>brew install python python-tk</code>.</p>
+
+  <h3>3.2 Установить Git</h3>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>xcode-select --install</code></pre></div>
+  <p>Либо скачайте с <a href="https://git-scm.com/download/mac" target="_blank" rel="noopener">git-scm.com/download/mac</a>. Проверка: <code>git --version</code>.</p>
+
+  <h3>3.3 Скачать проект</h3>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>cd ~/Desktop
+git clone https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git
+cd voicekey</code></pre></div>
+
+  <h3>3.4 Установить</h3>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>bash install.sh</code></pre></div>
+  <p>Скрипт создаст <code>.venv</code>, поставит библиотеки (на macOS вместо <code>keyboard</code> ставится <b>pynput</b> автоматически) и скачает модель.</p>
+  <div class="note">Если трей-иконка не появится, доустановите (активировав окружение <code>source .venv/bin/activate</code>): <code>pip install pyobjc-framework-Cocoa pyobjc-framework-Quartz</code></div>
+  <p>Ручной путь — то же командами:</p>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt</code></pre></div>
+
+  <h3>3.5 Разрешения macOS (без них не работает)</h3>
+  <p><b>System Settings → Privacy &amp; Security:</b></p>
+  <ol>
+    <li><b>Accessibility</b> — добавьте Terminal и включите (иначе pynput не ловит клавиши и не вставляет текст).</li>
+    <li><b>Input Monitoring</b> — там же добавьте Terminal.</li>
+    <li><b>Microphone</b> — разрешите доступ.</li>
+  </ol>
+  <p>После выдачи прав перезапустите программу.</p>
+
+  <h3>3.6 Отключить штатное действие CapsLock</h3>
+  <p><b>System Settings → Keyboard → Keyboard Shortcuts… → Modifier Keys</b> → для <b>Caps Lock</b> выберите <b>No Action</b>.</p>
+
+  <h3>3.7 Запуск</h3>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>chmod +x start.command        # один раз, чтобы файл стал исполняемым
+./start.command</code></pre></div>
+  <p>Либо вручную из активированного окружения:</p>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>cd ..
+python3 -m voicekey.main</code></pre></div>
+  <p>CUDA на Mac нет — программа автоматически работает на CPU (<code>int8</code>). Для скорости поставьте модель полегче (раздел 5).</p>
+
+  <h3>3.8 Автозапуск при входе (необязательно)</h3>
+  <div class="code"><span class="lang">bash</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>python3 -m voicekey.autostart          # создаст LaunchAgent .plist
+python3 -m voicekey.autostart remove   # удалит
+launchctl load ~/Library/LaunchAgents/com.voicekey.agent.plist   # активировать сразу</code></pre></div>
+
+  <h2 id="s4">4. Где что лежит и какие ссылки нужны</h2>
+  <table>
+    <thead><tr><th>Что</th><th>Откуда брать</th></tr></thead>
+    <tbody>
+      <tr><td>Python (Windows)</td><td><a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a></td></tr>
+      <tr><td>Python (macOS)</td><td><a href="https://www.python.org/downloads/macos/" target="_blank" rel="noopener">python.org/downloads/macos</a></td></tr>
+      <tr><td>Git (Windows)</td><td><a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a></td></tr>
+      <tr><td>Git (macOS)</td><td><code>xcode-select --install</code> или <a href="https://git-scm.com/download/mac" target="_blank" rel="noopener">git-scm.com/download/mac</a></td></tr>
+      <tr><td>Сам проект</td><td><code>git clone https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git</code></td></tr>
+      <tr><td>Модель large-v3-turbo</td><td><a href="https://huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo" target="_blank" rel="noopener">huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo</a></td></tr>
+      <tr><td>GPU-библиотеки (Windows)</td><td><code>pip install nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="s5">5. Модель распознавания</h2>
+  <p>В <code>config.json</code> по умолчанию <code>"model_size": "large-v3-turbo"</code>. При первой установке <code>install.bat</code> / <code>install.sh</code> скачивают её автоматически (<a href="https://huggingface.co/mobiuslabsgmbh/faster-whisper-large-v3-turbo" target="_blank" rel="noopener">репозиторий на Hugging Face</a>, ~1.5 ГБ) и кешируют. Дальше интернет не нужен.</p>
+  <p><b>Другие модели</b> качаются автоматически при выборе — переключаются в окне «Настройки» или в <code>config.json</code>:</p>
+  <div class="code"><span class="lang">json</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>"model_size": "small"</code></pre></div>
+  <p>Доступно: <code>tiny</code>, <code>base</code>, <code>small</code>, <code>medium</code>, <code>large-v3</code>, <code>large-v3-turbo</code>. Чем легче — тем быстрее и менее точно. На слабом ПК / без GPU начните с <code>small</code> или <code>medium</code>.</p>
+  <p><b>Полностью офлайн</b> (скачать модель папкой заранее). Из папки <code>voicekey</code>, окружение активировано:</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>pip install huggingface_hub
+hf download mobiuslabsgmbh/faster-whisper-large-v3-turbo --local-dir models-large-v3-turbo</code></pre></div>
+  <p>Затем в <code>config.json</code>:</p>
+  <div class="code"><span class="lang">json</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>"model_size": "models-large-v3-turbo"</code></pre></div>
+  <p>Программа увидит локальную папку рядом с собой и не полезет в интернет. Папки <code>models-*</code> исключены из git и репозиторий не раздувают.</p>
+
+  <h2 id="s6">6. Как пользоваться</h2>
+  <ol>
+    <li><b>CapsLock</b> — начать запись (красный кружок в трее, точки у курсора).</li>
+    <li>Говорите.</li>
+    <li><b>CapsLock</b> ещё раз — остановить. Текст распознаётся (жёлтый кружок) и вставляется в активное поле.</li>
+    <li><b>Трей → История</b> — все распознавания (хранятся в <code>history.db</code>).</li>
+    <li><b>Трей → Настройки</b> — модель, порог двойного нажатия, словарь автозамен.</li>
+    <li><b>Трей → Выход</b> — закрыть.</li>
+  </ol>
+  <p><b>Словарь автозамен</b> (<code>dictionary.json</code> или окно настроек) — формат <code>слово = замена</code>, по одной паре на строку. Применяется к каждому распознаванию. Язык распознавания — русский.</p>
+
+  <h2 id="s7">7. Если что-то не работает</h2>
+  <table>
+    <thead><tr><th>Симптом</th><th>Что проверить</th></tr></thead>
+    <tbody>
+      <tr><td><code>python</code> / <code>git</code> «не является командой»</td><td>Python ставили без галочки <b>Add to PATH</b>, либо не перезапустили PowerShell. Переустановите с галочкой, откройте PowerShell заново.</td></tr>
+      <tr><td><code>ModuleNotFoundError: voicekey</code></td><td>Запускаете не из той папки. Нужно быть в <b>родителе</b> папки <code>voicekey</code>. Проще — через <code>start.bat</code> / <code>start.command</code>.</td></tr>
+      <tr><td><code>install.bat</code> мигнул и закрылся</td><td>Запустите его из PowerShell, чтобы увидеть ошибку: <code>cd voicekey</code> затем <code>.\install.bat</code>.</td></tr>
+      <tr><td>Не реагирует на CapsLock (Windows)</td><td>Запустите <code>start.bat</code> <b>от имени администратора</b> — библиотека <code>keyboard</code> требует прав на перехват.</td></tr>
+      <tr><td>Не реагирует на CapsLock (macOS)</td><td>Не выданы <b>Accessibility / Input Monitoring</b>, либо не отключено действие CapsLock (разделы 3.5–3.6).</td></tr>
+      <tr><td>Распознаёт очень медленно</td><td>Это CPU. Возьмите модель полегче (<code>small</code>/<code>medium</code>) или включите GPU (раздел 2.1).</td></tr>
+      <tr><td>CUDA-ошибки в консоли (Windows)</td><td>Не критично — программа сама уйдёт на CPU. Для GPU обновите драйвер NVIDIA и выполните <code>pip install nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*</code>.</td></tr>
+      <tr><td><code>tkinter</code> не найден (macOS)</td><td>Поставьте Python с Tk: <code>brew install python-tk</code> или сборку с python.org.</td></tr>
+      <tr><td>Трей-иконки нет (macOS)</td><td><code>pip install pyobjc-framework-Cocoa pyobjc-framework-Quartz</code>.</td></tr>
+      <tr><td>Микрофон не тот</td><td>В <code>config.json</code> поле <code>microphone</code> — индекс устройства (число). <code>null</code> = системный по умолчанию.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="s8">8. Для того, кто публикует проект (один раз)</h2>
+  <p>Если репозитория ещё нет, превратите папку <code>voicekey</code> в репозиторий. PowerShell в папке <code>voicekey</code>:</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>git init
+git add .
+git commit -m "VoiceKey: первая версия"</code></pre></div>
+  <p>Создайте пустой репозиторий на GitHub, затем:</p>
+  <div class="code"><span class="lang">powershell</span><button class="copy" onclick="copyCode(this)">Копировать</button><pre><code>git remote add origin https://github.com/&lt;ВАШ_АККАУНТ&gt;/voicekey.git
+git branch -M main
+git push -u origin main</code></pre></div>
+  <p>Файл <code>.gitignore</code> уже исключает <code>.venv/</code>, <code>__pycache__/</code>, модель <code>models-*/</code> и <code>history.db</code> — в репозиторий попадёт только код. Пользователям давайте адрес для <code>git clone</code> из раздела 1.3 / 3.3.</p>
+
+  <h2 id="s9">9. Удаление</h2>
+  <ol>
+    <li>Выключите автозапуск: <code>python -m voicekey.autostart remove</code> (Windows) / <code>python3 -m voicekey.autostart remove</code> (macOS).</li>
+    <li>Удалите папку <code>voicekey</code>.</li>
+    <li>(macOS) Удалите <code>~/Library/LaunchAgents/com.voicekey.agent.plist</code>, если остался.</li>
+    <li>Кеш моделей: <code>%USERPROFILE%\.cache\huggingface</code> (Windows) / <code>~/.cache/huggingface</code> (macOS) — удалите при желании.</li>
+  </ol>
+
+  <footer>VoiceKey — локальный голосовой ввод на базе Whisper. Документ можно открыть в браузере или распечатать в PDF (Ctrl/Cmd + P).</footer>
+</div>
+
+<script>
+function copyCode(btn){
+  var pre = btn.parentElement.querySelector('pre');
+  var text = pre ? pre.innerText : '';
+  navigator.clipboard.writeText(text).then(function(){
+    var old = btn.textContent;
+    btn.textContent = 'Скопировано';
+    setTimeout(function(){ btn.textContent = old; }, 1200);
+  });
+}
+</script>
+</body>
+</html>

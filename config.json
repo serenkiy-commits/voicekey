@@ -1,0 +1,9 @@
+{
+  "model_size": "large-v3-turbo",
+  "device": "cuda",
+  "compute_type": "float16",
+  "microphone": null,
+  "sound_volume": 0.5,
+  "double_press_threshold_ms": 300,
+  "autostart": false
+}

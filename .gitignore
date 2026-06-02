@@ -1,0 +1,20 @@
+# Виртуальное окружение
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Локальная модель распознавания (~3 ГБ, качается отдельно)
+models-large-v3/
+models-*/
+
+# Данные пользователя
+history.db
+
+# Системное
+.DS_Store
+Thumbs.db
