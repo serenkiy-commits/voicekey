@@ -144,8 +144,15 @@ class VoiceKey:
             self._ctk_root.after(0, lambda: self.overlay.show("recording"))
         # Beep: start
         beep(600, 100)
-        self.recorder.start()
-        log("[VoiceKey] Recording started.")
+        try:
+            self.recorder.start()
+            log("[VoiceKey] Recording started.")
+        except Exception:
+            log("[VoiceKey] Ошибка старта записи (микрофон/устройство):\n" + traceback.format_exc())
+            self.recording = False
+            self.tray.set_idle()
+            if self._ctk_root and self.overlay:
+                self._ctk_root.after(0, self.overlay.hide)
 
     def _stop_recording(self):
         self.recording = False
@@ -159,7 +166,11 @@ class VoiceKey:
         # Switch overlay to processing animation
         if self._ctk_root and self.overlay:
             self._ctk_root.after(0, lambda: self.overlay.set_processing())
-        audio = self.recorder.stop()
+        try:
+            audio = self.recorder.stop()
+        except Exception:
+            log("[VoiceKey] Ошибка остановки записи (микрофон/устройство):\n" + traceback.format_exc())
+            audio = None
 
         if audio is None or len(audio) < 1600:  # <0.1s
             log("[VoiceKey] Аудио пустое/слишком короткое — пропуск. Проверьте микрофон.")

@@ -18,25 +18,31 @@ class Recorder:
             if self._recording:
                 return
             self._chunks = []
-            self._recording = True
-            self._stream = sd.InputStream(
-                samplerate=self.sample_rate,
-                channels=self.channels,
-                dtype="float32",
-                device=self.device,
-                callback=self._callback,
-                blocksize=1024,
-            )
-            self._stream.start()
+            try:
+                self._stream = sd.InputStream(
+                    samplerate=self.sample_rate,
+                    channels=self.channels,
+                    dtype="float32",
+                    device=self.device,
+                    callback=self._callback,
+                    blocksize=1024,
+                )
+                self._recording = True
+                self._stream.start()
+            except Exception:
+                self._stream = None
+                self._recording = False
+                raise
 
     def stop(self):
         with self._lock:
             if not self._recording:
                 return None
             self._recording = False
-            self._stream.stop()
-            self._stream.close()
-            self._stream = None
+            if self._stream is not None:
+                self._stream.stop()
+                self._stream.close()
+                self._stream = None
             if not self._chunks:
                 return None
             audio = np.concatenate(self._chunks, axis=0).flatten()
